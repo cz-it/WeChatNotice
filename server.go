@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 
 	"github.com/cz-it/WeChatNotice/rpc"
@@ -56,12 +55,7 @@ func (svr *Server) startWXWeb() {
 
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(msgHdl), "msgHdl")
 	session.HandlerRegister.EnableByName("msgHdl")
-	err = session.LoginAndServe(true)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
+	go session.LoginAndServe(false)
 }
 
 func (svr *Server) start() {
@@ -69,10 +63,11 @@ func (svr *Server) start() {
 	svr.startWXWeb()
 	lis, err := net.Listen("tcp", svr.addr)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		fmt.Printf("failed to listen: %v \n", err)
 	}
 
+	fmt.Printf("Start RPC... \n")
 	if err := svr.rpcSvr.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		fmt.Printf("failed to serve: %v\n", err)
 	}
 }

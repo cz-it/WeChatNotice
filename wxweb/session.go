@@ -286,9 +286,10 @@ func (s *Session) LoginAndServe(useCache bool) error {
 	if err != nil {
 		return err
 	}
-
+	logs.Info("jb:%s", string(jb))
 	jc, err := rrconfig.LoadJsonConfigFromBytes(jb)
 	if err != nil {
+		logs.Error("LoadJsonConfigFromBytes error:%s", err.Error())
 		return err
 	}
 
