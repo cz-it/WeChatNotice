@@ -35,9 +35,9 @@ import (
 	"time"
 
 	"github.com/mdp/qrterminal"
-	"github.com/songtianyi/rrframework/config"
+	rrconfig "github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/rrframework/storage"
+	rrstorage "github.com/songtianyi/rrframework/storage"
 )
 
 const (
@@ -96,6 +96,7 @@ type Session struct {
 	Api             *ApiV2
 	OnLoginAvatar   func(string) error
 	AfterLogin      func() error
+	SendChan        chan *TextMessage
 }
 
 // CreateSession: create wechat bot session
@@ -128,6 +129,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister, qrmode int)
 			return nil
 		},
 	}
+	session.SendChan = make(chan *TextMessage, 100)
 
 	if handlerRegister != nil {
 		session.HandlerRegister = handlerRegister
@@ -341,6 +343,8 @@ func (s *Session) serve() error {
 		select {
 		case m := <-msg:
 			go s.consumer(m)
+		case m := <-s.SendChan:
+			go s.SendText(m.Content, m.FromUserName, m.ToUserName)
 		case err := <-errChan:
 			// TODO maybe not all consumed messages ended
 			return err

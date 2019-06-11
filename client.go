@@ -9,12 +9,14 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Client is a client cmd
 type Client struct {
 	svrAddr string
 	conn    *grpc.ClientConn
 	rpcCli  rpc.WeChatNoticeClient
 }
 
+// NewClient create a new client
 func NewClient(addr string) (cli *Client) {
 	cli = &Client{}
 	cli.svrAddr = addr
