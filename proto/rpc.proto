@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+service WeChatNotice{
+    // Send a Notice     
+    rpc Notice(NoticeReq) returns (NoticeRsp) {}
+}
+
+message NoticeReq {
+    string msg = 1;
+    string nick = 2;
+}
+
+message NoticeRsp {
+    int32 errno = 1;
+    int32 errmsg = 2;
+}
